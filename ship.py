@@ -10,7 +10,6 @@ class Ship:
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
 
-
         # 加载飞船图像并获取其外接矩形
         self.image = pygame.image.load('images/ship.bmp')
         self.rect = self.image.get_rect()
@@ -24,8 +23,6 @@ class Ship:
         # 移动标志
         self.moving_right = False
         self.moving_Left = False
-
-
 
     def update(self):
         """根据移动标志调整飞船的位置"""
