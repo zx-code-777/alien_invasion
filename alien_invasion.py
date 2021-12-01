@@ -5,6 +5,7 @@ from ship import Ship
 from bullet import Bullet
 from alien import Alien
 
+
 class AlienInvasion:
     """管理游戏资源和行为的类"""
 
@@ -25,6 +26,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_alients()
             self._update_screen()
 
     def _check_events(self):
@@ -69,6 +71,9 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _update_alients(self):
+        """跟新外星人的位置"""
+
     def _create_fleet(self):
         """创建外星人群"""
         # 创建一个外星人并计算一行可以容纳多少个外星人
@@ -77,14 +82,27 @@ class AlienInvasion:
         available_space_x = self.settings.screen_width - (2 * aline_width)
         number_aliens_x = available_space_x // (2 * aline_width)
 
-        # 创建第一行的外星人
-        for aline_number in range(number_aliens_x):
-            # 创建第一个外星人并加入行
-            aline = Alien(self)
-            aline.x = aline_width + 2 * aline_width * aline_number
-            aline.rect.x = aline.x
-            self.aliens.add(aline)
+        # 计算屏幕可以容纳多少行外星人
+        aline_height = aline.rect.height
+        ship_height = self.ship.rect.height
+        available_space_y = self.settings.screen_height - (3 * aline_height) - ship_height
+        number_rows = available_space_y // (2 * aline_height)
 
+        # 创建第一行的外星人
+        for row_number in range(number_rows):
+            for aline_number in range(number_aliens_x):
+                # 创建第一行外星人
+                self._creat_aline(aline_number, row_number)
+
+    def _creat_aline(self, aline_number, row_number):
+        """创建一个外星人并将其放在当前行"""
+        alien = Alien(self)
+        alien_width = alien.rect.width
+        alien_height = alien.rect.height
+        alien.x = alien_width + 2 * alien_width * aline_number
+        alien.rect.x = alien.x
+        alien.rect.y = alien.rect.height + 2 * alien_height * row_number
+        self.aliens.add(alien)
 
     def _update_screen(self):
         """更新屏幕上的图像，并切换到新屏幕"""
