@@ -1,6 +1,8 @@
 import sys
+from time import sleep
 import pygame
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -15,6 +17,8 @@ class AlienInvasion:
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption('Alien Invasion')
+        # 创建一个用于存储游戏统计信息的实例
+        self.stats = GameStats(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -87,7 +91,7 @@ class AlienInvasion:
         self._check_fleet_edges()
         self.aliens.update()
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print("游戏结束")
+            self._ship_hit()
 
     def _check_fleet_edges(self):
         for alien in self.aliens.sprites():
@@ -145,6 +149,20 @@ class AlienInvasion:
 
         # 让最近绘制的屏幕可见
         pygame.display.flip()
+
+
+    def _ship_hit(self):
+        """响应飞船被外星人撞到"""
+        # 将ships_left减1
+        self.stats.ship_left -= 1
+        # 清空余下的外星人和子弹
+        self.aliens.empty()
+        self.bullets.empty()
+        # 创建一群新的外星人，并将飞船放到屏幕底端的中央
+        self._create_fleet()
+        self.ship.center_ship()
+        # 暂停
+        sleep(0.5)
 
 
 if __name__ == '__main__':
